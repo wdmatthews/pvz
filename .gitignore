@@ -24,6 +24,8 @@ Plugins
 Plugins.meta
 Resources
 Resources.meta
+Artwork
+Artwork.meta
 
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # /[Aa]ssets/AssetStoreTools*
