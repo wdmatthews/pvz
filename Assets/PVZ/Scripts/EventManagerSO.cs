@@ -25,7 +25,7 @@ namespace PVZ
         public void Emit(string eventName, int data)
         {
             if (!_intActions.ContainsKey(eventName)) return;
-            _intActions[eventName].Invoke(data);
+            _intActions[eventName]?.Invoke(data);
         }
     }
 }

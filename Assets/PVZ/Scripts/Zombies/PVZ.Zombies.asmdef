@@ -1,0 +1,16 @@
+{
+    "name": "PVZ.Zombies",
+    "rootNamespace": "PVZ.Zombies",
+    "references": [
+        "GUID:61f57c4937d524910b48d031c97a78bd"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

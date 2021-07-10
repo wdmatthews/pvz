@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace PVZ.Mechanics
+namespace PVZ.Zombies
 {
-    [AddComponentMenu("PVZ/Mechanics/Zombie")]
+    [AddComponentMenu("PVZ/Zombies/Zombie")]
     [DisallowMultipleComponent]
     public class Zombie : MonoBehaviour
     {

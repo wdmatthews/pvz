@@ -32,10 +32,5 @@ namespace PVZ.UI
                 .OnComplete(() => _sunIcon.transform.DOScale(1, _sunAmountAnimationDuration / 2));
             _sunAmountLabel.text = $"{amount}";
         }
-
-        public void TestOnSunAmountChange()
-        {
-            _eventManager.Emit("sun-amount-change", Random.Range(0, 11));
-        }
     }
 }

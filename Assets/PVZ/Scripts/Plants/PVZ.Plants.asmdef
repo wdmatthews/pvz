@@ -1,6 +1,6 @@
 {
-    "name": "PVZ.Mechanics",
-    "rootNamespace": "",
+    "name": "PVZ.Plants",
+    "rootNamespace": "PVZ.Plants",
     "references": [
         "GUID:61f57c4937d524910b48d031c97a78bd"
     ],
