@@ -19,18 +19,31 @@ namespace PVZ.UI
         [SerializeField] private float _sunAmountAnimationPositiveScale = 1.1f;
         [SerializeField] private float _sunAmountAnimationNegativeScale = 1 / 1.1f;
 
+        [Space]
+        [Header("Seeds")]
+        [SerializeField] private Transform _seedsContainer = null;
+        [SerializeField] private SeedPacket _seedPacketPrefab = null;
+
         private void Awake()
         {
-            _eventManager.On("sun-amount-change", OnSunAmountChange);
+            _eventManager.On("change-sun-amount", OnChangeSunAmount);
+            _eventManager.On("add-seed-packet", OnAddSeedPacket);
         }
 
-        private void OnSunAmountChange(int amount)
+        private void OnChangeSunAmount(int amount)
         {
-            float sunIconScale = amount - int.Parse(_sunAmountLabel.text) >= 0
-                ? _sunAmountAnimationPositiveScale : _sunAmountAnimationNegativeScale;
+            float change = amount - int.Parse(_sunAmountLabel.text);
+            if (Mathf.Approximately(change, 0)) return;
+            float sunIconScale = change > 0 ? _sunAmountAnimationPositiveScale : _sunAmountAnimationNegativeScale;
             _sunIcon.transform.DOScale(sunIconScale, _sunAmountAnimationDuration / 2)
                 .OnComplete(() => _sunIcon.transform.DOScale(1, _sunAmountAnimationDuration / 2));
             _sunAmountLabel.text = $"{amount}";
+        }
+
+        private void OnAddSeedPacket(string name, Sprite icon, int cost, float cooldown)
+        {
+            SeedPacket seedPacket = Instantiate(_seedPacketPrefab, _seedsContainer);
+            seedPacket.Initialize(name, icon, cost, cooldown, _eventManager);
         }
     }
 }

@@ -7,11 +7,13 @@ namespace PVZ
     {
         private float _maxTime = 0;
         private float _timeRemaining = 0;
-        private bool _isRunning = false;
         private Action _onDone = null;
         private bool _startOnReset = true;
 
-        public Timer(float maxTime, Action onDone, bool startOnReset = true)
+        public bool IsRunning { get; private set; } = false;
+        public float TimePercentage => _timeRemaining / _maxTime;
+
+        public Timer(float maxTime, Action onDone = null, bool startOnReset = true)
         {
             _maxTime = maxTime;
             _timeRemaining = _maxTime;
@@ -21,28 +23,28 @@ namespace PVZ
 
         public void Start()
         {
-            _isRunning = true;
+            IsRunning = true;
         }
 
         public void Stop()
         {
-            _isRunning = false;
+            IsRunning = false;
         }
 
         public void Reset(float newMaxTime = 0)
         {
             if (!Mathf.Approximately(newMaxTime, 0)) _maxTime = newMaxTime;
             _timeRemaining = _maxTime;
-            _isRunning = _startOnReset;
+            IsRunning = _startOnReset;
         }
 
         public void Tick()
         {
-            if (!_isRunning) return;
+            if (!IsRunning) return;
             if (Mathf.Approximately(_timeRemaining, 0))
             {
-                _onDone?.Invoke();
                 Reset();
+                _onDone?.Invoke();
             }
             else _timeRemaining = Mathf.Clamp(_timeRemaining - Time.deltaTime, 0, _maxTime);
         }

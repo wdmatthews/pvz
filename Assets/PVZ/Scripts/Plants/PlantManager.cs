@@ -11,11 +11,13 @@ namespace PVZ.Plants
 
         [SerializeField] private EventManagerSO _plantEventManager = null;
         [SerializeField] private EventManagerSO _uiEventManager = null;
+        [SerializeField] private SpriteRenderer _tileCursor = null;
         [SerializeField] private PlantSO[] _plantSOs = { };
 
         private Dictionary<string, PlantSO> _plantSOsByName = new Dictionary<string, PlantSO>();
         private Dictionary<Vector2Int, Plant> _plantsByPosition = new Dictionary<Vector2Int, Plant>();
         private int _sunAmount = 50;
+        private string _selectedPlantPacket = "";
 
         private void Awake()
         {
@@ -24,13 +26,20 @@ namespace PVZ.Plants
                 _plantSOsByName.Add(plantSO.name, plantSO);
             }
 
+            _uiEventManager.On("select-seed", SelectSeed);
+            _uiEventManager.On("seed-timer-done", OnSeedTimerDone);
             _plantEventManager.On("produce-sun", ChangeSunAmount);
+            _tileCursor.gameObject.SetActive(false);
         }
 
         private void Start()
         {
-            _uiEventManager.Emit("sun-amount-change", _sunAmount);
-            PlacePlant("Producer", new Vector2Int(0, 0));
+            foreach (var plantSO in _plantSOs)
+            {
+                _uiEventManager.Emit("add-seed-packet", plantSO.name, plantSO.Icon, plantSO.Cost, plantSO.PlaceCooldown);
+            }
+
+            _uiEventManager.Emit("change-sun-amount", _sunAmount);
         }
 
         private void Update()
@@ -39,22 +48,48 @@ namespace PVZ.Plants
             {
                 plant.Value.OnUpdate();
             }
+
+            if (_selectedPlantPacket != "")
+            {
+                Vector2Int mouseGridPosition = MouseUtilities.GridPosition;
+                Vector3 mouseWorldPosition = GridUtilities.GridToWorld(mouseGridPosition);
+                _tileCursor.transform.position = mouseWorldPosition;
+
+                if (MouseUtilities.IsPressed && GridUtilities.PointIsInGrid(mouseGridPosition)
+                    && !_plantsByPosition.ContainsKey(mouseGridPosition))
+                {
+                    PlacePlant(_selectedPlantPacket, mouseGridPosition);
+                    _uiEventManager.Emit("plant-seed", _selectedPlantPacket);
+                    SelectSeed("");
+                }
+            }
         }
 
-        private void PlacePlant(string plantName, Vector2Int position)
+        private void SelectSeed(string name)
         {
-            PlantSO plantSO = _plantSOsByName[plantName];
-            Plant plant = Instantiate(plantSO.Prefab, transform);
-            _plantsByPosition.Add(position, plant);
-            plant.transform.position = GridUtilities.CellToWorld(position);
-            plant.Place(plantSO, _plantEventManager);
-            ChangeSunAmount(-plantSO.SunCost);
+            _selectedPlantPacket = _selectedPlantPacket == name ? "" : name;
+            _tileCursor.gameObject.SetActive(_selectedPlantPacket != "");
         }
 
         private void ChangeSunAmount(int amount)
         {
             _sunAmount = Mathf.Clamp(_sunAmount + amount, 0, _maxSunAmount);
-            _uiEventManager.Emit("sun-amount-change", _sunAmount);
+            _uiEventManager.Emit("change-sun-amount", _sunAmount);
+        }
+
+        private void PlacePlant(string name, Vector2Int position)
+        {
+            PlantSO plantSO = _plantSOsByName[name];
+            Plant plant = Instantiate(plantSO.Prefab, transform);
+            _plantsByPosition.Add(position, plant);
+            plant.transform.position = GridUtilities.GridToWorld(position);
+            plant.Place(plantSO, _plantEventManager);
+            ChangeSunAmount(-plantSO.Cost);
+        }
+
+        private void OnSeedTimerDone()
+        {
+            _uiEventManager.Emit("change-sun-amount", _sunAmount);
         }
     }
 }
