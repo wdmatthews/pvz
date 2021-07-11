@@ -15,6 +15,8 @@ namespace PVZ
             = new Dictionary<string, Action<string>>();
         private Dictionary<string, Action<string, Sprite, int, float>> _seedPacketActions
             = new Dictionary<string, Action<string, Sprite, int, float>>();
+        private Dictionary<string, Action<MonoBehaviour>> _monobehaviourActions
+            = new Dictionary<string, Action<MonoBehaviour>>();
 
         public void On(string eventName, Action action)
         {
@@ -38,6 +40,12 @@ namespace PVZ
         {
             if (_seedPacketActions.ContainsKey(eventName)) _seedPacketActions[eventName] += action;
             else _seedPacketActions.Add(eventName, action);
+        }
+
+        public void On(string eventName, Action<MonoBehaviour> action)
+        {
+            if (_monobehaviourActions.ContainsKey(eventName)) _monobehaviourActions[eventName] += action;
+            else _monobehaviourActions.Add(eventName, action);
         }
 
         public void Off(string eventName, Action action)
@@ -68,6 +76,13 @@ namespace PVZ
             if (_seedPacketActions[eventName] == null) _seedPacketActions.Remove(eventName);
         }
 
+        public void Off(string eventName, Action<MonoBehaviour> action)
+        {
+            if (!_monobehaviourActions.ContainsKey(eventName)) return;
+            _monobehaviourActions[eventName] -= action;
+            if (_monobehaviourActions[eventName] == null) _monobehaviourActions.Remove(eventName);
+        }
+
         public void Emit(string eventName)
         {
             if (!_actions.ContainsKey(eventName)) return;
@@ -90,6 +105,12 @@ namespace PVZ
         {
             if (!_seedPacketActions.ContainsKey(eventName)) return;
             _seedPacketActions[eventName]?.Invoke(name, icon, cost, cooldown);
+        }
+
+        public void Emit(string eventName, MonoBehaviour data)
+        {
+            if (!_monobehaviourActions.ContainsKey(eventName)) return;
+            _monobehaviourActions[eventName]?.Invoke(data);
         }
     }
 }

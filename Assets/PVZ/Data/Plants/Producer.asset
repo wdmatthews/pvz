@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eeae16a7d78c44dca0316b1af5720d7, type: 3}
   m_Name: Producer
   m_EditorClassIdentifier: 
+  IsPlant: 1
+  MaxHealth: 20
+  Damage: 0
   Prefab: {fileID: 4363898986483087194, guid: 5580465ce7d434faa8da8afffb19cfc3, type: 3}
   Icon: {fileID: 21300000, guid: 01de2a7064fef462dbda4caddaa7bbb2, type: 3}
   Cost: 20

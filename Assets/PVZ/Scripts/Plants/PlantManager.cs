@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using PVZ.Combat;
 
 namespace PVZ.Plants
 {
@@ -10,11 +11,13 @@ namespace PVZ.Plants
         private const int _maxSunAmount = 10000;
 
         [SerializeField] private EventManagerSO _plantEventManager = null;
+        [SerializeField] private EventManagerSO _combatEventManager = null;
         [SerializeField] private EventManagerSO _uiEventManager = null;
         [SerializeField] private SpriteRenderer _tileCursor = null;
         [SerializeField] private PlantSO[] _plantSOs = { };
 
         private Dictionary<string, PlantSO> _plantSOsByName = new Dictionary<string, PlantSO>();
+        private List<Plant> _plants = new List<Plant>();
         private Dictionary<Vector2Int, Plant> _plantsByPosition = new Dictionary<Vector2Int, Plant>();
         private int _sunAmount = 50;
         private string _selectedPlantPacket = "";
@@ -27,10 +30,11 @@ namespace PVZ.Plants
                 _plantSOsByName.Add(plantSO.name, plantSO);
             }
 
+            _plantEventManager.On("produce-sun", ChangeSunAmount);
+            _combatEventManager.On("damageable-died", OnDamageableDied);
             _uiEventManager.On("select-seed", SelectSeed);
             _uiEventManager.On("seed-timer-done", OnSeedTimerDone);
             _uiEventManager.On("toggle-shovel", OnToggleShovel);
-            _plantEventManager.On("produce-sun", ChangeSunAmount);
             _tileCursor.gameObject.SetActive(false);
         }
 
@@ -46,9 +50,9 @@ namespace PVZ.Plants
 
         private void Update()
         {
-            foreach (var plant in _plantsByPosition)
+            for (int i = _plants.Count - 1; i >= 0; i--)
             {
-                plant.Value.OnUpdate();
+                _plants[i].OnUpdate();
             }
 
             if (_selectedPlantPacket != "" || _isShoveling)
@@ -91,18 +95,23 @@ namespace PVZ.Plants
         {
             PlantSO plantSO = _plantSOsByName[name];
             Plant plant = Instantiate(plantSO.Prefab, transform);
+            _plants.Add(plant);
             _plantsByPosition.Add(position, plant);
             plant.transform.position = GridUtilities.GridToWorld(position);
-            plant.Place(plantSO, _plantEventManager);
+            plant.Place(plantSO, position, _plantEventManager, _combatEventManager);
             ChangeSunAmount(-plantSO.Cost);
         }
 
         private void RemovePlant(Vector2Int position)
         {
-            _isShoveling = false;
-            _tileCursor.gameObject.SetActive(false);
-            _uiEventManager.Emit("change-sun-amount", _sunAmount);
+            if (_isShoveling)
+            {
+                _tileCursor.gameObject.SetActive(false);
+                _uiEventManager.Emit("change-sun-amount", _sunAmount);
+                _isShoveling = false;
+            }
             if (!_plantsByPosition.ContainsKey(position)) return;
+            _plants.Remove(_plantsByPosition[position]);
             Destroy(_plantsByPosition[position].gameObject);
             _plantsByPosition.Remove(position);
         }
@@ -118,6 +127,14 @@ namespace PVZ.Plants
             _tileCursor.gameObject.SetActive(_isShoveling);
             if (_isShoveling) _uiEventManager.Emit("is-shoveling");
             else _uiEventManager.Emit("change-sun-amount", _sunAmount);
+        }
+
+        private void OnDamageableDied(MonoBehaviour damageableMonoBehaviour)
+        {
+            Damageable damageable = (Damageable)damageableMonoBehaviour;
+            if (!damageable.DamageableData.IsPlant) return;
+            Plant plant = (Plant)damageable;
+            RemovePlant(plant.Position);
         }
     }
 }

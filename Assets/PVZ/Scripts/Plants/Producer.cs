@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace PVZ.Plants
 {
     public class Producer : Plant
@@ -5,9 +7,10 @@ namespace PVZ.Plants
         private ProducerSO _producerData = null;
         private Timer _productionTimer = null;
 
-        public override void Place(PlantSO data, EventManagerSO eventManager)
+        public override void Place(PlantSO data, Vector2Int position,
+            EventManagerSO plantEventManager, EventManagerSO combatEventManager)
         {
-            base.Place(data, eventManager);
+            base.Place(data, position, plantEventManager, combatEventManager);
             _producerData = (ProducerSO)data;
             _productionTimer = new Timer(_producerData.ProductionCooldown, OnProduce);
             _productionTimer.Reset(_producerData.ProductionCooldown);
@@ -16,12 +19,13 @@ namespace PVZ.Plants
         public override void OnUpdate()
         {
             base.OnUpdate();
+            if (_productionTimer == null) return;
             _productionTimer.Tick();
         }
 
         private void OnProduce()
         {
-            _eventManager.Emit("produce-sun", _producerData.ProductionAmountPerCooldown);
+            _plantEventManager.Emit("produce-sun", _producerData.ProductionAmountPerCooldown);
         }
     }
 }

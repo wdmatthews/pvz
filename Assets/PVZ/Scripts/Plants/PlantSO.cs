@@ -1,9 +1,10 @@
 using UnityEngine;
+using PVZ.Combat;
 
 namespace PVZ.Plants
 {
     [CreateAssetMenu(fileName = "New Plant", menuName = "PVZ/Plants/Plant")]
-    public class PlantSO : ScriptableObject
+    public class PlantSO : DamageableSO
     {
         public Plant Prefab = null;
         public Sprite Icon = null;

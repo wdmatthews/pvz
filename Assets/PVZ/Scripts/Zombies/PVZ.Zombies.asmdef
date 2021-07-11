@@ -2,7 +2,8 @@
     "name": "PVZ.Zombies",
     "rootNamespace": "PVZ.Zombies",
     "references": [
-        "GUID:61f57c4937d524910b48d031c97a78bd"
+        "GUID:61f57c4937d524910b48d031c97a78bd",
+        "GUID:da888612793c146ad8faf3bcad934cab"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

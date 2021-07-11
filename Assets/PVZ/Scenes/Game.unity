@@ -724,6 +724,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _plantEventManager: {fileID: 11400000, guid: 2ade086c8174f41ec9eb02fba1ebf483, type: 2}
+  _combatEventManager: {fileID: 11400000, guid: 82dc0892a2a25410e905184b296d34f3, type: 2}
   _uiEventManager: {fileID: 11400000, guid: 4b018ccfa47ad446695ed18db23d41b6, type: 2}
   _tileCursor: {fileID: 332017982}
   _plantSOs:
