@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using PVZ.Combat;
 
@@ -9,7 +10,6 @@ namespace PVZ.Plants
     {
         private PlantSO _plantData = null;
         protected EventManagerSO _plantEventManager = null;
-        public Vector2Int Position { get; private set; }
 
         public virtual void Place(PlantSO data, Vector2Int position, EventManagerSO plantEventManager, EventManagerSO combatEventManager)
         {
@@ -20,9 +20,9 @@ namespace PVZ.Plants
             _combatEventManager = combatEventManager;
         }
 
-        public virtual void OnUpdate()
+        public override void OnUpdate(List<Damageable> enemies)
         {
-
+            base.OnUpdate(enemies);
         }
     }
 }

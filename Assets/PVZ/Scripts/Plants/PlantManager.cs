@@ -22,6 +22,7 @@ namespace PVZ.Plants
         private int _sunAmount = 50;
         private string _selectedPlantPacket = "";
         private bool _isShoveling = false;
+        private List<Damageable> _zombies = new List<Damageable>();
 
         private void Awake()
         {
@@ -32,6 +33,7 @@ namespace PVZ.Plants
 
             _plantEventManager.On("produce-sun", ChangeSunAmount);
             _combatEventManager.On("damageable-died", OnDamageableDied);
+            _combatEventManager.On("spawn-zombie", OnSpawnZombie);
             _uiEventManager.On("select-seed", SelectSeed);
             _uiEventManager.On("seed-timer-done", OnSeedTimerDone);
             _uiEventManager.On("toggle-shovel", OnToggleShovel);
@@ -50,9 +52,9 @@ namespace PVZ.Plants
 
         private void Update()
         {
-            for (int i = _plants.Count - 1; i >= 0; i--)
-            {
-                _plants[i].OnUpdate();
+            for (int i = _plants.Count - 1; i >= 0; i--) {
+                Plant plant = _plants[i];
+                plant.OnUpdate(_zombies.FindAll(zombie => zombie.Position.y == plant.Position.y));
             }
 
             if (_selectedPlantPacket != "" || _isShoveling)
@@ -100,6 +102,7 @@ namespace PVZ.Plants
             plant.transform.position = GridUtilities.GridToWorld(position);
             plant.Place(plantSO, position, _plantEventManager, _combatEventManager);
             ChangeSunAmount(-plantSO.Cost);
+            _combatEventManager.Emit("place-plant", plant);
         }
 
         private void RemovePlant(Vector2Int position)
@@ -111,9 +114,10 @@ namespace PVZ.Plants
                 _isShoveling = false;
             }
             if (!_plantsByPosition.ContainsKey(position)) return;
-            _plants.Remove(_plantsByPosition[position]);
-            Destroy(_plantsByPosition[position].gameObject);
+            Plant plant = _plantsByPosition[position];
+            _plants.Remove(plant);
             _plantsByPosition.Remove(position);
+            Destroy(plant.gameObject);
         }
 
         private void OnSeedTimerDone()
@@ -132,9 +136,18 @@ namespace PVZ.Plants
         private void OnDamageableDied(MonoBehaviour damageableMonoBehaviour)
         {
             Damageable damageable = (Damageable)damageableMonoBehaviour;
-            if (!damageable.DamageableData.IsPlant) return;
+            if (!damageable.DamageableData.IsPlant)
+            {
+                _zombies.Remove(damageable);
+                return;
+            }
             Plant plant = (Plant)damageable;
             RemovePlant(plant.Position);
+        }
+
+        private void OnSpawnZombie(MonoBehaviour zombie)
+        {
+            _zombies.Add((Damageable)zombie);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PVZ.Combat
@@ -17,8 +18,14 @@ namespace PVZ.Combat
         }
         private int _health = 0;
         protected EventManagerSO _combatEventManager = null;
+        public Vector2Int Position { get; protected set; }
 
-        protected void TakeDamage(int amount)
+        public virtual void OnUpdate(List<Damageable> enemies)
+        {
+            
+        }
+
+        public void TakeDamage(int amount)
         {
             _health = Mathf.Clamp(_health - amount, 0, _damageableData.MaxHealth);
             if (_health == 0) _combatEventManager.Emit("damageable-died", this);

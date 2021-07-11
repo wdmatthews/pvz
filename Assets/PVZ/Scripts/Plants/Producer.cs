@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
+using PVZ.Combat;
 
 namespace PVZ.Plants
 {
@@ -16,9 +18,9 @@ namespace PVZ.Plants
             _productionTimer.Reset(_producerData.ProductionCooldown);
         }
 
-        public override void OnUpdate()
+        public override void OnUpdate(List<Damageable> enemies)
         {
-            base.OnUpdate();
+            base.OnUpdate(enemies);
             if (_productionTimer == null) return;
             _productionTimer.Tick();
         }
