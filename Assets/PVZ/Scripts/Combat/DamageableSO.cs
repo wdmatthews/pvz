@@ -7,6 +7,5 @@ namespace PVZ.Combat
     {
         public bool IsPlant = true;
         public int MaxHealth = 20;
-        public int Damage = 5;
     }
 }

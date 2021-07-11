@@ -17,6 +17,8 @@ namespace PVZ
             = new Dictionary<string, Action<string, Sprite, int, float>>();
         private Dictionary<string, Action<MonoBehaviour>> _monobehaviourActions
             = new Dictionary<string, Action<MonoBehaviour>>();
+        private Dictionary<string, Action<Vector3, string>> _positionStringActions
+            = new Dictionary<string, Action<Vector3, string>>();
 
         public void On(string eventName, Action action)
         {
@@ -46,6 +48,12 @@ namespace PVZ
         {
             if (_monobehaviourActions.ContainsKey(eventName)) _monobehaviourActions[eventName] += action;
             else _monobehaviourActions.Add(eventName, action);
+        }
+
+        public void On(string eventName, Action<Vector3, string> action)
+        {
+            if (_positionStringActions.ContainsKey(eventName)) _positionStringActions[eventName] += action;
+            else _positionStringActions.Add(eventName, action);
         }
 
         public void Off(string eventName, Action action)
@@ -83,6 +91,13 @@ namespace PVZ
             if (_monobehaviourActions[eventName] == null) _monobehaviourActions.Remove(eventName);
         }
 
+        public void Off(string eventName, Action<Vector3, string> action)
+        {
+            if (!_positionStringActions.ContainsKey(eventName)) return;
+            _positionStringActions[eventName] -= action;
+            if (_positionStringActions[eventName] == null) _positionStringActions.Remove(eventName);
+        }
+
         public void Emit(string eventName)
         {
             if (!_actions.ContainsKey(eventName)) return;
@@ -111,6 +126,12 @@ namespace PVZ
         {
             if (!_monobehaviourActions.ContainsKey(eventName)) return;
             _monobehaviourActions[eventName]?.Invoke(data);
+        }
+
+        public void Emit(string eventName, Vector3 position, string spawnableName)
+        {
+            if (!_positionStringActions.ContainsKey(eventName)) return;
+            _positionStringActions[eventName]?.Invoke(position, spawnableName);
         }
     }
 }

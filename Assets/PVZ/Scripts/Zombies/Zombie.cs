@@ -30,6 +30,8 @@ namespace PVZ.Zombies
                 .CompareTo(Vector3.Distance(transform.position, b.transform.position)));
             Damageable closestPlant = enemies.Count > 0 ? enemies[0] : null;
 
+            if (!closestPlant) _attackTimer.Stop();
+
             if (closestPlant && Vector3.Distance(transform.position, closestPlant.transform.position) < _zombieData.Range)
             {
                 if (closestPlant && !_closestPlant)
@@ -42,7 +44,7 @@ namespace PVZ.Zombies
                 if (!_attackTimer.IsRunning)
                 {
                     _attackTimer.Start();
-                    closestPlant.TakeDamage(DamageableData.Damage);
+                    closestPlant.TakeDamage(_zombieData.Damage);
                 }
             }
             else transform.position -= new Vector3(_zombieData.MoveSpeed * Time.deltaTime, 0);

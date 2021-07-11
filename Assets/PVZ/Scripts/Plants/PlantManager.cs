@@ -15,6 +15,7 @@ namespace PVZ.Plants
         [SerializeField] private EventManagerSO _uiEventManager = null;
         [SerializeField] private SpriteRenderer _tileCursor = null;
         [SerializeField] private PlantSO[] _plantSOs = { };
+        [SerializeField] private ProjectileSO[] _plantProjectileSOs = { };
 
         private Dictionary<string, PlantSO> _plantSOsByName = new Dictionary<string, PlantSO>();
         private List<Plant> _plants = new List<Plant>();
@@ -23,6 +24,8 @@ namespace PVZ.Plants
         private string _selectedPlantPacket = "";
         private bool _isShoveling = false;
         private List<Damageable> _zombies = new List<Damageable>();
+        private Dictionary<string, ProjectileSO> _plantProjectileSOsByName = new Dictionary<string, ProjectileSO>();
+        private List<Projectile> _projectiles = new List<Projectile>();
 
         private void Awake()
         {
@@ -31,9 +34,15 @@ namespace PVZ.Plants
                 _plantSOsByName.Add(plantSO.name, plantSO);
             }
 
+            foreach (var projectileSO in _plantProjectileSOs)
+            {
+                _plantProjectileSOsByName.Add(projectileSO.name, projectileSO);
+            }
+
             _plantEventManager.On("produce-sun", ChangeSunAmount);
             _combatEventManager.On("damageable-died", OnDamageableDied);
             _combatEventManager.On("spawn-zombie", OnSpawnZombie);
+            _combatEventManager.On("plant-attack", OnPlantAttack);
             _uiEventManager.On("select-seed", SelectSeed);
             _uiEventManager.On("seed-timer-done", OnSeedTimerDone);
             _uiEventManager.On("toggle-shovel", OnToggleShovel);
@@ -55,6 +64,17 @@ namespace PVZ.Plants
             for (int i = _plants.Count - 1; i >= 0; i--) {
                 Plant plant = _plants[i];
                 plant.OnUpdate(_zombies.FindAll(zombie => zombie.Position.y == plant.Position.y));
+            }
+            for (int i = _projectiles.Count - 1; i >= 0; i--)
+            {
+                Projectile projectile = _projectiles[i];
+                if (!projectile)
+                {
+                    _projectiles.RemoveAt(i);
+                    continue;
+                }
+                projectile.OnUpdate(_zombies.FindAll(zombie => zombie.Position.y
+                    == GridUtilities.WorldToGrid(projectile.transform.position).y));
             }
 
             if (_selectedPlantPacket != "" || _isShoveling)
@@ -148,6 +168,14 @@ namespace PVZ.Plants
         private void OnSpawnZombie(MonoBehaviour zombie)
         {
             _zombies.Add((Damageable)zombie);
+        }
+
+        private void OnPlantAttack(Vector3 position, string projectileName)
+        {
+            ProjectileSO projectileSO = _plantProjectileSOsByName[projectileName];
+            Projectile projectile = Instantiate(projectileSO.Prefab, transform);
+            projectile.Spawn(projectileSO, position);
+            _projectiles.Add(projectile);
         }
     }
 }

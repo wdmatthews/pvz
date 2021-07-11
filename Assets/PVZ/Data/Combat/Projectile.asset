@@ -9,13 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93b7d4dbdf4174669867fcc7bce27e17, type: 3}
-  m_Name: Zombie
+  m_Script: {fileID: 11500000, guid: 4c5f05152e8b043b98a62901b9e4dec7, type: 3}
+  m_Name: Projectile
   m_EditorClassIdentifier: 
-  IsPlant: 0
-  MaxHealth: 25
-  Prefab: {fileID: 6181756755403916780, guid: fb52ed5766df24867bdc012fc651b636, type: 3}
-  MoveSpeed: 0.5
-  Range: 0.5
+  Prefab: {fileID: 2019050722146628565, guid: ea3c3cfc8687b4e03a7606048e03b69b, type: 3}
+  IsFromPlant: 1
+  MoveSpeed: 2
   Damage: 5
-  AttackCooldown: 1
+  AttackRange: 5
+  DamageRange: 0.25

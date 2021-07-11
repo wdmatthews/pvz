@@ -729,6 +729,9 @@ MonoBehaviour:
   _tileCursor: {fileID: 332017982}
   _plantSOs:
   - {fileID: 11400000, guid: 7ecf4384c3b2f4b3299e53cf43ae3a83, type: 2}
+  - {fileID: 11400000, guid: 778608c6b9e854b4fb019da6890fff27, type: 2}
+  _plantProjectileSOs:
+  - {fileID: 11400000, guid: 9c7b04660ec004b92ae9515ee195bbae, type: 2}
 --- !u!4 &559085634
 Transform:
   m_ObjectHideFlags: 0
