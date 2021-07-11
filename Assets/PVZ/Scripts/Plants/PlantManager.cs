@@ -18,6 +18,7 @@ namespace PVZ.Plants
         private Dictionary<Vector2Int, Plant> _plantsByPosition = new Dictionary<Vector2Int, Plant>();
         private int _sunAmount = 50;
         private string _selectedPlantPacket = "";
+        private bool _isShoveling = false;
 
         private void Awake()
         {
@@ -28,6 +29,7 @@ namespace PVZ.Plants
 
             _uiEventManager.On("select-seed", SelectSeed);
             _uiEventManager.On("seed-timer-done", OnSeedTimerDone);
+            _uiEventManager.On("toggle-shovel", OnToggleShovel);
             _plantEventManager.On("produce-sun", ChangeSunAmount);
             _tileCursor.gameObject.SetActive(false);
         }
@@ -49,18 +51,25 @@ namespace PVZ.Plants
                 plant.Value.OnUpdate();
             }
 
-            if (_selectedPlantPacket != "")
+            if (_selectedPlantPacket != "" || _isShoveling)
             {
                 Vector2Int mouseGridPosition = MouseUtilities.GridPosition;
                 Vector3 mouseWorldPosition = GridUtilities.GridToWorld(mouseGridPosition);
                 _tileCursor.transform.position = mouseWorldPosition;
 
-                if (MouseUtilities.IsPressed && GridUtilities.PointIsInGrid(mouseGridPosition)
-                    && !_plantsByPosition.ContainsKey(mouseGridPosition))
+                if (MouseUtilities.IsPressed && GridUtilities.PointIsInGrid(mouseGridPosition))
                 {
-                    PlacePlant(_selectedPlantPacket, mouseGridPosition);
-                    _uiEventManager.Emit("plant-seed", _selectedPlantPacket);
-                    SelectSeed("");
+                    if (_isShoveling)
+                    {
+                        RemovePlant(mouseGridPosition);
+                        _uiEventManager.Emit("stop-shoveling");
+                    }
+                    else if (!_plantsByPosition.ContainsKey(mouseGridPosition))
+                    {
+                        PlacePlant(_selectedPlantPacket, mouseGridPosition);
+                        _uiEventManager.Emit("plant-seed", _selectedPlantPacket);
+                        SelectSeed("");
+                    }
                 }
             }
         }
@@ -69,6 +78,7 @@ namespace PVZ.Plants
         {
             _selectedPlantPacket = _selectedPlantPacket == name ? "" : name;
             _tileCursor.gameObject.SetActive(_selectedPlantPacket != "");
+            _uiEventManager.Emit($"{(_selectedPlantPacket == "" ? "enable" : "disable")}-shoveling");
         }
 
         private void ChangeSunAmount(int amount)
@@ -87,9 +97,27 @@ namespace PVZ.Plants
             ChangeSunAmount(-plantSO.Cost);
         }
 
+        private void RemovePlant(Vector2Int position)
+        {
+            _isShoveling = false;
+            _tileCursor.gameObject.SetActive(false);
+            _uiEventManager.Emit("change-sun-amount", _sunAmount);
+            if (!_plantsByPosition.ContainsKey(position)) return;
+            Destroy(_plantsByPosition[position].gameObject);
+            _plantsByPosition.Remove(position);
+        }
+
         private void OnSeedTimerDone()
         {
             _uiEventManager.Emit("change-sun-amount", _sunAmount);
+        }
+
+        private void OnToggleShovel()
+        {
+            _isShoveling = !_isShoveling;
+            _tileCursor.gameObject.SetActive(_isShoveling);
+            if (_isShoveling) _uiEventManager.Emit("is-shoveling");
+            else _uiEventManager.Emit("change-sun-amount", _sunAmount);
         }
     }
 }

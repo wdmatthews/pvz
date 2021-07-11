@@ -43,6 +43,7 @@ namespace PVZ.UI
             _eventManager.On("select-seed", OnOtherSelect);
             _eventManager.On("plant-seed", OnPlantSeed);
             _eventManager.On("change-sun-amount", OnChangeSunAmount);
+            _eventManager.On("is-shoveling", OnIsShoveling);
         }
 
         private void SetSelected(bool isSelected)
@@ -83,6 +84,11 @@ namespace PVZ.UI
         {
             _cooldownOverlay.gameObject.SetActive(false);
             _eventManager.Emit("seed-timer-done");
+        }
+
+        private void OnIsShoveling()
+        {
+            _selectButton.interactable = false;
         }
     }
 }
