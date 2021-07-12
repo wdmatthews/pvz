@@ -12,7 +12,7 @@ namespace PVZ.Zombies
         private const float _startTime = 20;
         private const float _maxSpawnTime = 20;
         private const float _minSpawnTime = 3;
-        private const float _spawnTimeChange = 0.25f;
+        private const float _spawnTimeChange = 0.5f;
 
         [SerializeField] private EventManagerSO _zombieEventManager = null;
         [SerializeField] private EventManagerSO _combatEventManager = null;

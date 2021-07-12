@@ -15,7 +15,7 @@ MonoBehaviour:
   IsPlant: 1
   MaxHealth: 100
   Prefab: {fileID: 2505999591194910715, guid: 91f053204ecaa429abb846bfa88db377, type: 3}
-  Icon: {fileID: 21300000, guid: 01de2a7064fef462dbda4caddaa7bbb2, type: 3}
+  Icon: {fileID: 21300000, guid: ba4fbd34850674546abbcfe65c183a0e, type: 3}
   Cost: 50
   PlaceCooldown: 5
   AttackCooldown: 2
