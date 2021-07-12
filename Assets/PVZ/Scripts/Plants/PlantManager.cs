@@ -16,6 +16,7 @@ namespace PVZ.Plants
         [SerializeField] private SpriteRenderer _tileCursor = null;
         [SerializeField] private PlantSO[] _plantSOs = { };
         [SerializeField] private ProjectileSO[] _plantProjectileSOs = { };
+        [SerializeField] private LawnMower _lawnMowerPrefab = null;
 
         private Dictionary<string, PlantSO> _plantSOsByName = new Dictionary<string, PlantSO>();
         private List<Plant> _plants = new List<Plant>();
@@ -26,6 +27,7 @@ namespace PVZ.Plants
         private List<Damageable> _zombies = new List<Damageable>();
         private Dictionary<string, ProjectileSO> _plantProjectileSOsByName = new Dictionary<string, ProjectileSO>();
         private List<Projectile> _projectiles = new List<Projectile>();
+        private List<LawnMower> _lawnMowers = new List<LawnMower>();
 
         private void Awake()
         {
@@ -57,6 +59,15 @@ namespace PVZ.Plants
             }
 
             _uiEventManager.Emit("change-sun-amount", _sunAmount);
+
+            for (int y = 0; y < GridUtilities.GridSize.y; y++)
+            {
+                LawnMower lawnMower = Instantiate(_lawnMowerPrefab, transform);
+                _lawnMowers.Add(lawnMower);
+                Vector2Int position = new Vector2Int(-1, y);
+                lawnMower.transform.position = GridUtilities.GridToWorld(position);
+                lawnMower.Spawn(position);
+            }
         }
 
         private void Update()
@@ -75,6 +86,17 @@ namespace PVZ.Plants
                 }
                 projectile.OnUpdate(_zombies.FindAll(zombie => zombie.Position.y
                     == GridUtilities.WorldToGrid(projectile.transform.position).y));
+            }
+            for (int i = _lawnMowers.Count - 1; i >= 0; i--)
+            {
+                LawnMower lawnMower = _lawnMowers[i];
+                if (!lawnMower)
+                {
+                    _lawnMowers.RemoveAt(i);
+                    continue;
+                }
+                lawnMower.OnUpdate(_zombies.FindAll(zombie => zombie.Position.y
+                    == lawnMower.Position.y));
             }
 
             if (_selectedPlantPacket != "" || _isShoveling)

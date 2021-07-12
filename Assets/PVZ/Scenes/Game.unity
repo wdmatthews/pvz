@@ -732,6 +732,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 778608c6b9e854b4fb019da6890fff27, type: 2}
   _plantProjectileSOs:
   - {fileID: 11400000, guid: 9c7b04660ec004b92ae9515ee195bbae, type: 2}
+  _lawnMowerPrefab: {fileID: 7634917608786291826, guid: e24a036dd362a49ee8993ae1126dd024, type: 3}
 --- !u!4 &559085634
 Transform:
   m_ObjectHideFlags: 0

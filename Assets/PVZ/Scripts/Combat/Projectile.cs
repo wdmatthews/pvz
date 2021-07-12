@@ -31,7 +31,8 @@ namespace PVZ.Combat
             else
             {
                 transform.position += new Vector3(_projectileData.MoveSpeed * Time.deltaTime, 0);
-                if (transform.position.x - _spawnPosition.x > _projectileData.AttackRange)
+                if (transform.position.x - _spawnPosition.x > _projectileData.AttackRange
+                    || transform.position.x > GridUtilities.EndScreenWorldPosition)
                 {
                     Destroy(gameObject);
                 }
