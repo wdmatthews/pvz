@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using PVZ.Combat;
 
 namespace PVZ.Zombies
@@ -48,6 +49,11 @@ namespace PVZ.Zombies
                 }
             }
             else transform.position -= new Vector3(_zombieData.MoveSpeed * Time.deltaTime, 0);
+
+            if (transform.position.x < GridUtilities.GameOverWorldPosition)
+            {
+                SceneManager.LoadScene("Game Over");
+            }
 
             _closestPlant = closestPlant;
         }

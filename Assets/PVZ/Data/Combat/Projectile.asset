@@ -16,5 +16,5 @@ MonoBehaviour:
   IsFromPlant: 1
   MoveSpeed: 2
   Damage: 5
-  AttackRange: 5
+  AttackRange: 8
   DamageRange: 0.25

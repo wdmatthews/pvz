@@ -8,7 +8,11 @@ namespace PVZ.Zombies
     [DisallowMultipleComponent]
     public class ZombieManager : MonoBehaviour
     {
-        private const int spawnPosition = 11;
+        private const int _spawnPosition = 11;
+        private const float _startTime = 20;
+        private const float _maxSpawnTime = 20;
+        private const float _minSpawnTime = 3;
+        private const float _spawnTimeChange = 0.25f;
 
         [SerializeField] private EventManagerSO _zombieEventManager = null;
         [SerializeField] private EventManagerSO _combatEventManager = null;
@@ -18,6 +22,10 @@ namespace PVZ.Zombies
         private Dictionary<string, ZombieSO> _zombieSOsByName = new Dictionary<string, ZombieSO>();
         private List<Zombie> _zombies = new List<Zombie>();
         private List<Damageable> _plants = new List<Damageable>();
+        private Timer _startTimer = null;
+        private Timer _spawnTimer = null;
+        private bool _wasStarted = false;
+        private float _spawnTime = 0;
 
         private void Awake()
         {
@@ -32,7 +40,10 @@ namespace PVZ.Zombies
 
         private void Start()
         {
-            SpawnZombie("Zombie", new Vector2Int(spawnPosition, Random.Range(0, 5)));
+            _spawnTime = _maxSpawnTime;
+            _startTimer = new Timer(_startTime, OnStart, false);
+            _startTimer.Start();
+            _spawnTimer = new Timer(_spawnTime, OnSpawn, false);
         }
 
         private void Update()
@@ -42,7 +53,28 @@ namespace PVZ.Zombies
                 Zombie zombie = _zombies[i];
                 zombie.OnUpdate(_plants.FindAll(plant => plant.Position.y == zombie.Position.y));
             }
+
+            if (_wasStarted) _spawnTimer.Tick();
+            else _startTimer.Tick();
         }
+
+        private void OnStart()
+        {
+            _wasStarted = true;
+            _uiEventManager.Emit("zombies-are-coming");
+            SpawnZombie();
+            _spawnTimer.Start();
+        }
+
+        private void OnSpawn()
+        {
+            SpawnZombie();
+            _spawnTime = Mathf.Clamp(_spawnTime - _spawnTimeChange, _minSpawnTime, _maxSpawnTime);
+            _spawnTimer.Reset(_spawnTime);
+            _spawnTimer.Start();
+        }
+
+        private void SpawnZombie() => SpawnZombie("Zombie", new Vector2Int(_spawnPosition, Random.Range(0, 5)));
 
         private void SpawnZombie(string name, Vector2Int position)
         {

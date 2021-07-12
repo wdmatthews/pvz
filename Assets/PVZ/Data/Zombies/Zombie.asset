@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Zombie
   m_EditorClassIdentifier: 
   IsPlant: 0
-  MaxHealth: 25
+  MaxHealth: 50
   Prefab: {fileID: 6181756755403916780, guid: fb52ed5766df24867bdc012fc651b636, type: 3}
-  MoveSpeed: 0.5
+  MoveSpeed: 0.25
   Range: 0.5
   Damage: 5
-  AttackCooldown: 1
+  AttackCooldown: 2

@@ -7,6 +7,7 @@ namespace PVZ
         public static readonly Vector3 ZeroWorldPosition = new Vector3(-4.5f, -2);
         public static readonly Vector2Int GridSize = new Vector2Int(10, 5);
         public const float EndScreenWorldPosition = 6.5f;
+        public const float GameOverWorldPosition = -5.5f;
 
         public static Vector3 GridToWorld(Vector2Int gridPosition)
         {
